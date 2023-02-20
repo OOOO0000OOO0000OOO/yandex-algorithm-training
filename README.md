@@ -1,1 +1,3 @@
-# yandex-algorithm-training
+# Yandex Algorithm Training
+
+Solutions of Yandex Algorithms Training tasks in JavaScript.
