@@ -1,4 +1,41 @@
 /**
+ * @typedef { `${String}:${String}:${String}` } Time
+ * @param { Time } time 
+ * @returns { Number }
+ */
+
+const toSeconds = (time) => {
+  const [h, m, s] = time.split(':').map(Number);
+  return s + 60 * m + 3600 * h;
+};
+
+/**
+ * @param { Number } seconds 
+ * @returns { Time }
+ */
+
+const fromSeconds = (seconds) => {
+  const ss = seconds % 60;
+  const mm = ((seconds % 3600) - ss) / 60;
+  const hh = (seconds - (mm * 60 + ss)) / 3600;
+  return [hh, mm, ss]
+    .map((x) => String(x).padStart(2, '0'))
+    .join(':');
+};
+
+/**
+ * 
+ * @param { Time } time1 
+ * @param { Time } time2 
+ * @returns { Number }
+ */
+
+const getDiff = (time1, time2) => {
+  const diff = toSeconds(time2) - toSeconds(time1);
+  return diff >= 0 ? diff : diff + 86400;
+};
+
+/**
  * "7. SNTP"
  * https://contest.yandex.ru/contest/45468/problems/7/
  *
@@ -28,50 +65,33 @@
  * Возможно, что, пока клиент ожидал ответа, по клиентскому времени успели наступить новые
  * сутки, однако известно, что между отправкой клиентом запроса и получением ответа от
  * сервера прошло менее 24 часов.
- *
- * Формат ввода
+ * 
  * Программа получает на вход три временные метки A, B, C, по одной в каждой строке. Все
  * временные метки представлены в формате «hh:mm:ss», где «hh» – это часы, «mm» –
  * минуты, «ss» – секунды. Часы, минуты и секунды записываются ровно двумя цифрами
  * каждое (возможно, с дополнительными нулями в начале числа).
- *
- * Формат вывода
+ * 
+ * @param { Time } A время отправления запроса A
+ * @param { Time } B сервер отправляет время В
+ * @param { Time } C клиент получает ответ в момент С
+ * 
+ * @returns { Time }
  * Программа должна вывести одну временную метку в формате, описанном во входных
  * данных, – вычисленное точное время для установки на клиенте. В выводе не должно быть
  * пробелов, пустых строк в начале вывода.
  */
-
-const fs = require('fs');
-
-const data = fs.readFileSync('input.txt', {
-  encoding: 'utf-8',
-});
-
-const toSeconds = (time) => {
-  const [h, m, s] = time.split(':').map(Number);
-
-  return s + 60 * m + 3600 * h;
-};
-
-const fromSeconds = (seconds) => {
-  const ss = seconds % 60;
-  const mm = ((seconds % 3600) - ss) / 60;
-  const hh = (seconds - (mm * 60 + ss)) / 3600;
-  return [hh, mm, ss]
-    .map((x) => String(x).padStart(2, '0'))
-    .join(':');
-};
-
-const getDiff = (time1, time2) => {
-  const diff = toSeconds(time2) - toSeconds(time1);
-  return diff >= 0 ? diff : diff + 86400;
-};
 
 const getPreciseTime = (A, B, C) => {
   const delay = Math.round(getDiff(A, C) / 2);
   const preciseSeconds = (toSeconds(B) + delay) % 86400;
   return fromSeconds(preciseSeconds);
 };
+
+const fs = require('fs');
+
+const data = fs.readFileSync('input.txt', {
+  encoding: 'utf-8',
+});
 
 const [A, B, C] = data
   .trim()
